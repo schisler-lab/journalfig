@@ -27,8 +27,11 @@ panel_placeholder <- function(note = "art to be placed", font = jf_font(),
              linetype = "22") +
     annotate("text", x = 0.5, y = 0.55, label = note, family = family,
              size = pt_to_size(jf()$type_pt$axis_text), colour = jf()$colour$annotation) +
+    # Not at the type floor. Nothing in this panel ships, so parking it on the
+    # floor did nothing but make every figure holding a placeholder report that
+    # its smallest type had no headroom, about text that gets deleted.
     annotate("text", x = 0.5, y = 0.40, label = "PLACEHOLDER", family = family,
-             size = pt_to_size(jf()$type_pt$floor), colour = jf()$colour$structure) +
+             size = pt_to_size(jf()$type_pt$axis_text), colour = jf()$colour$structure) +
     scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
     theme_void(base_family = family)

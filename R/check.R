@@ -71,11 +71,7 @@ check_journal <- function(file, font = jf_font(), verbose = TRUE) {
   if (length(sw) && min(sw) < jf()$stroke_pt$floor - 0.01)
     fail <- c(fail, sprintf("stroke at %.2f pt is below the %.1f pt floor",
                             min(sw), jf()$stroke_pt$floor))
-  else if (length(sw)) {
-    at_floor <- min(sw) < jf()$stroke_pt$floor + 0.05
-    note <- c(note, sprintf("thinnest stroke %.2f pt%s", min(sw),
-                            if (at_floor) " (at the floor)" else ""))
-  }
+  else if (length(sw)) note <- c(note, sprintf("thinnest stroke %.2f pt", min(sw)))
 
   # 5. a standard width
   wpx <- suppressWarnings(as.numeric(gsub("[^0-9.]", "",
