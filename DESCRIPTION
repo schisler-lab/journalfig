@@ -12,4 +12,4 @@ Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.1), ggplot2, patchwork
 Imports: jsonlite, systemfonts, svglite, ragg, grid, grDevices, stats, utils
 Suggests: showtext, here
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.1.0

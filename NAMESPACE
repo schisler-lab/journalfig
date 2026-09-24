@@ -21,20 +21,22 @@ export(resolve_font)
 export(resolve_font_bold)
 export(save_journal)
 export(theme_journal)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,annotate)
-importFrom(ggplot2,element_blank)
-importFrom(ggplot2,element_line)
-importFrom(ggplot2,element_text)
-importFrom(ggplot2,expansion)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,ggsave)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,margin)
-importFrom(ggplot2,scale_x_continuous)
-importFrom(ggplot2,scale_y_continuous)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,theme_classic)
-importFrom(ggplot2,theme_void)
+importFrom(ggplot2,
+  aes,
+  annotate,
+  element_blank,
+  element_line,
+  element_text,
+  expansion,
+  ggplot,
+  ggsave,
+  labs,
+  margin,
+  scale_x_continuous,
+  scale_y_continuous,
+  theme,
+  theme_classic,
+  theme_void
+)
 importFrom(stats,setNames)
 importFrom(utils,combn)
