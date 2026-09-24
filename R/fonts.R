@@ -32,7 +32,7 @@ digits_are_tabular <- function(family) {
 #' pipeline outlines in Illustrator before anything ships, so the font itself
 #' never travels. Only a collaborator who must edit the LIVE file needs it
 #' installed, which is what font = "safe" is for.
-resolve_font <- function(font = jf()$default_font, allow_fallback = FALSE,
+resolve_font <- function(font = jf_font(), allow_fallback = FALSE,
                          tabular = TRUE) {
   family <- if (!is.null(jf()$fonts[[font]])) jf()$fonts[[font]] else font
   have   <- family %in% systemfonts::system_fonts()$family
@@ -92,7 +92,7 @@ resolve_font <- function(font = jf()$default_font, allow_fallback = FALSE,
 #' Does this face already have tabular digits, and does tnum change anything?
 #' Answers the question directly instead of leaving you to wonder whether the
 #' variant did something. Widths are at 20 pt for readability.
-font_report <- function(font = jf()$default_font) {
+font_report <- function(font = jf_font()) {
   fam <- if (!is.null(jf()$fonts[[font]])) jf()$fonts[[font]] else font
   if (!(fam %in% systemfonts::system_fonts()$family))
     stop("'", fam, "' is not installed. list_fonts() shows what is.", call. = FALSE)
@@ -127,7 +127,7 @@ font_report <- function(font = jf()$default_font) {
 #' fake bold. Where jf()$bold_for names a real bold partner, use that family and
 #' leave face alone. Because weights 2, 3, 4 and 6 are duplexed to identical
 #' character widths, swapping in the bold never reflows anything.
-resolve_font_bold <- function(font = jf()$default_font, allow_fallback = FALSE) {
+resolve_font_bold <- function(font = jf_font(), allow_fallback = FALSE) {
   fam  <- resolve_font(font, allow_fallback = allow_fallback, tabular = FALSE)
   pair <- jf()$bold_for[[fam]]
   if (!is.null(pair) && pair %in% systemfonts::system_fonts()$family)

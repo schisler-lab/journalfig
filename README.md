@@ -21,7 +21,9 @@ notice at proof.
 ## Use
 
 ```r
-library(journalfig)   # attaches ggplot2 and patchwork too
+library(journalfig)                       # attaches ggplot2 and patchwork too
+jf_config("journal_fig.json")             # this project's font registry
+jf_font("concourse")                      # FIRST, before any plot is built
 
 p <- ggplot(df, aes(x, y)) +
   geom_line(linewidth = pt_to_mm(jf()$stroke_pt$data)) +
@@ -69,7 +71,29 @@ the defaults, so name only what differs:
 `bold_for` exists because some families carry no internal bold and use a
 separate weight as their bold. Without it ggplot synthesizes a smeared fake one.
 
-## Two traps worth knowing
+## Choosing the font
+
+The face is a decision about a FIGURE, not about a call, so it is set once:
+
+```r
+jf_font("concourse")   # a key in the registry, or a family name outright
+jf_font()              # what is active now
+```
+
+Call it before anything that draws. `theme_journal()`, `annotate_stat()`,
+`panel_tag()`, `panel_placeholder()`, `save_journal()` and `check_journal()` all
+default to `jf_font()`, and R evaluates a default argument lazily, at the moment
+the function first needs it. In `p + annotate_stat(...) + theme_journal(...)` the
+annotation resolves its font before the theme is ever evaluated, so anything that
+sets the font as a side effect of building a layer arrives too late for the
+layers next to it. Setting it up front is the only ordering that holds.
+
+Skipping it is not loud. Every call site independently falls back to the safe
+face, so a figure comes out mostly Open Sans with a few strings in the family you
+thought you had asked for. `check_journal()` and `check_pdf_fonts()` catch it
+after the fact; `jf_font()` prevents it.
+
+## Three traps worth knowing
 
 A `systemfonts` registered variant is an alias that `svglite` understands and
 `cairo_pdf` does not, because cairo resolves through fontconfig. The SVG comes
@@ -80,9 +104,19 @@ prefers a real installed family and warns when it cannot.
 finishes, not when the script ends, because `source()` evaluates each expression
 in its own frame.
 
+R evaluates default arguments lazily, in the frame of the call, at first use. A
+function cannot set state that its siblings in a `+` chain will read, because
+they may already have resolved theirs. See `jf_font()` above.
+
 ## Diagnostics
 
 ```r
 list_fonts("concourse")   # exact family names this machine reports
 font_report("concourse")  # are its digits tabular, and by which route
+check_journal("fig1.svg") # live text, font, type and stroke floors, width
+check_pdf_fonts("fig1.pdf")  # every family actually embedded
 ```
+
+`check_pdf_fonts()` scans the raw bytes. A PDF is binary, so anything that turns
+it into a character vector first silently drops most of it and reports a clean
+subset of the truth.

@@ -11,7 +11,7 @@
 #' an exact box to drop art into. save_journal() warns on every export that
 #' still contains one, so an unfilled slot cannot quietly become the submitted
 #' version.
-panel_placeholder <- function(note = "art to be placed", font = jf()$default_font,
+panel_placeholder <- function(note = "art to be placed", font = jf_font(),
                               allow_fallback = FALSE) {
   family <- resolve_font(font, allow_fallback = allow_fallback, tabular = FALSE)
   p <- ggplot() +

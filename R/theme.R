@@ -8,7 +8,7 @@
 #' panel by panel.
 #'
 #' @param ticks which axes carry ticks. Categorical axes get none.
-theme_journal <- function(width = "1col", font = jf()$default_font,
+theme_journal <- function(width = "1col", font = jf_font(),
                           ticks = c("none", "x", "y", "both"),
                           allow_fallback = FALSE) {
   ticks  <- match.arg(ticks)
@@ -63,7 +63,7 @@ theme_journal <- function(width = "1col", font = jf()$default_font,
 
 #' In-panel statistic. Points in, mm out.
 annotate_stat <- function(label, x = -Inf, y = Inf, hjust = -0.1, vjust = 1.3,
-                          colour = jf()$colour$annotation, font = jf()$default_font,
+                          colour = jf()$colour$annotation, font = jf_font(),
                           allow_fallback = FALSE) {
   # family must be set explicitly: annotate() does NOT inherit the theme font,
   # so without this the stat renders in the device default and everything else

@@ -48,3 +48,28 @@ jf <- function() {
   if (is.null(.jf_env$cfg)) jf_config()
   .jf_env$cfg
 }
+
+#' The font this figure is using.
+#'
+#' Font is a FIGURE-level decision, but every call site used to default to the
+#' configuration default independently, so a figure built in Concourse still
+#' drew its axes, ticks and in-panel statistics in the safe face.
+#'
+#' CALL THIS FIRST, before building any layer. It is deliberately NOT a side
+#' effect of theme_journal(), because R evaluates a default argument lazily at
+#' the point of use: annotate_stat() called before theme_journal() in a `+`
+#' chain would resolve its font before the theme ever ran, and the figure would
+#' come out mixed depending on the order somebody happened to type. An explicit
+#' call at the top of the script has no such ordering trap.
+#'
+#'   jf_font("concourse")
+#'   p <- ggplot(...) + annotate_stat(...) + theme_journal("2col")
+#'
+#' @param font a key or family name to set, or nothing to read.
+jf_font <- function(font = NULL) {
+  if (!is.null(font)) {
+    .jf_env$font <- font
+    return(invisible(font))
+  }
+  if (is.null(.jf_env$font)) jf()$default_font else .jf_env$font
+}

@@ -1,6 +1,7 @@
 # Written by hand so the package builds without roxygen2.
 export(jf)
 export(jf_config)
+export(jf_font)
 export(pt_to_mm)
 export(pt_to_size)
 export(mm_to_in)

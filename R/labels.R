@@ -16,7 +16,7 @@ panel_tag <- function(i, style = jf()$default_labels) {
 #' Tag a panel. Applied through patchwork's tag system at assembly, or directly
 #' on a single plot.
 annotate_panel <- function(p, i, style = jf()$default_labels,
-                           font = jf()$default_font, allow_fallback = FALSE) {
+                           font = jf_font(), allow_fallback = FALSE) {
   b <- resolve_font_bold(font, allow_fallback = allow_fallback)
   p + labs(tag = panel_tag(i, style)) +
     theme(plot.tag = element_text(

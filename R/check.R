@@ -10,7 +10,7 @@
 #' colors appeared in figures that encode nothing by color, and text kept
 #' getting outlined. A rule nobody can violate beats a rule everybody agrees
 #' with, so this runs on every save.
-check_journal <- function(file, font = jf()$default_font, verbose = TRUE) {
+check_journal <- function(file, font = jf_font(), verbose = TRUE) {
   svg <- paste(readLines(file, warn = FALSE), collapse = "\n")
   fail <- character(0); note <- character(0)
 
@@ -81,12 +81,22 @@ check_journal <- function(file, font = jf()$default_font, verbose = TRUE) {
 #' does not gets silently swapped, and the SVG from the same render still looks
 #' perfect. That is exactly how a figure passed with Open Sans throughout the
 #' SVG while its PDF carried DejaVu Sans on every axis number.
-check_pdf_fonts <- function(file, font = jf()$default_font, verbose = TRUE) {
-  raw  <- readBin(file, "raw", file.info(file)$size)
-  txt  <- rawToChar(raw[raw != as.raw(0)])
-  hits <- regmatches(txt, gregexpr("/BaseFont\\s*/[A-Za-z0-9+#-]+", txt))[[1]]
-  # cairo prefixes an embedded subset with six letters and a plus sign
-  fonts <- unique(sub("^[A-Z]{6}\\+", "", sub("/BaseFont\\s*/", "", hits)))
+check_pdf_fonts <- function(file, font = jf_font(), verbose = TRUE) {
+  # Read as RAW and search with grepRaw. The earlier version did
+  # rawToChar(raw[raw != as.raw(0)]) first, which mangles a binary PDF badly
+  # enough to lose /BaseFont entries entirely: a figure rendered in Concourse
+  # embedded four faces, two of them the wrong ones, and this returned nothing
+  # and passed it clean.
+  raw <- readBin(file, "raw", file.info(file)$size)
+  pos <- grepRaw("/BaseFont", raw, all = TRUE, fixed = TRUE)
+  fonts <- character(0)
+  for (i in pos) {
+    chunk <- rawToChar(raw[i:min(i + 80L, length(raw))])
+    m <- regmatches(chunk, regexpr("/BaseFont\\s*/[A-Za-z0-9+#.-]+", chunk))
+    if (length(m))
+      fonts <- c(fonts, sub("^[A-Z]{6}\\+", "", sub("/BaseFont\\s*/", "", m)))
+  }
+  fonts <- unique(fonts)
   if (!length(fonts)) return(invisible(TRUE))
 
   # cairo names the embedded FACE ("OpenSans-Bold"), not the family, so compare

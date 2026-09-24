@@ -16,7 +16,7 @@
 #' png is work in progress only and never a deliverable.
 save_journal <- function(plot, name, width = "1col", height_mm,
                          fmt = c("svg", "pdf", "png"), outdir = "figures",
-                         font = jf()$default_font, check = TRUE) {
+                         font = jf_font(), check = TRUE) {
   fmt <- match.arg(fmt, several.ok = TRUE)
   w_mm <- fig_width(width)
   if (height_mm > jf()$max_height_mm)
