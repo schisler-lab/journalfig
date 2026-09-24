@@ -1,0 +1,41 @@
+{
+  "_comment": "Single source of truth for Schisler Lab journal figure geometry and type. R reads this via R/journal_fig.R. A Python twin must read THIS file, never restate the numbers, so the two can never drift.",
+  "version": "1.0",
+  "widths_mm": {
+    "1col": 89,
+    "1.5col": 136,
+    "2col": 183
+  },
+  "max_height_mm": 240,
+  "gutter_mm": 4,
+  "type_pt": {
+    "axis_title": 7.5,
+    "axis_text": 6.5,
+    "legend": 6.5,
+    "annotation": 6.5,
+    "panel_label": 8.5,
+    "floor": 6.0
+  },
+  "stroke_pt": {
+    "data": 0.9,
+    "axis": 0.7,
+    "tick": 0.55,
+    "floor": 0.5
+  },
+  "fonts": {
+    "safe": "Open Sans"
+  },
+  "default_font": "safe",
+  "default_labels": "lower",
+  "raster_dpi": 600,
+  "wip_png_dpi": 600,
+  "_fonts_comment": "Only the collaborator-safe face ships with the package. Licensed families are per-machine, so name them in a project's own journal_fig.json, which jf_config() merges over these defaults. MB Type ships tabular figures as a separate ' Tab' family, which resolve_font() prefers over a registered tnum variant because cairo_pdf cannot see an alias.",
+  "_bold_comment": "Concourse weights 2,3,4 use weight 6 as their bold (specimen p.7). ggplot face='bold' would synthesize a fake bold instead, so bold elements set the family explicitly. A font with no entry here just uses face='bold'.",
+  "bold_for": {},
+  "_png_comment": "600 not 300. At 7.5 pt a bold axis title is only about 31 px tall at 300 dpi, and bold reads as barely different from regular even though it carries 1.7x the ink. The PNG is a work-in-progress format, never a deliverable, but it should not make you doubt the type.",
+  "_colour_comment": "journalfig owns STRUCTURE colour only: the axis lines, ticks and the in-panel statistic. Everything that encodes data belongs to the project's own palette and this package must never touch it. Structure is grey so it recedes; content is black.",
+  "colour": {
+    "structure": "#999999",
+    "annotation": "#5F5F5F"
+  }
+}

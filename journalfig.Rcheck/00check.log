@@ -1,0 +1,78 @@
+* using log directory ‘/Users/nitdawg/projects/journalfig/journalfig.Rcheck’
+* using R version 4.6.1 (2026-06-24)
+* using platform: aarch64-apple-darwin23
+* R was compiled by
+    Apple clang version 17.0.0 (clang-1700.3.19.1)
+    GNU Fortran (GCC) 14.2.0
+* running under: macOS Tahoe 26.6.2
+* using session charset: UTF-8
+* current time: 2026-09-24 11:28:42 UTC
+* using option ‘--no-manual’
+* checking for file ‘journalfig/DESCRIPTION’ ... OK
+* this is package ‘journalfig’ version ‘0.3.0’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘journalfig’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking dependencies in R code ... NOTE
+Namespaces in Imports field not imported from:
+  ‘stats’ ‘utils’
+  All declared Imports should be used.
+Packages in Depends field not imported from:
+  ‘ggplot2’ ‘patchwork’
+  These packages need to be imported from (in the NAMESPACE file)
+  for when this namespace is loaded but not attached.
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+annotate_panel: no visible global function definition for ‘labs’
+annotate_panel: no visible global function definition for ‘theme’
+annotate_panel: no visible global function definition for
+  ‘element_text’
+annotate_stat: no visible global function definition for ‘annotate’
+panel_placeholder: no visible global function definition for ‘ggplot’
+panel_placeholder: no visible global function definition for ‘annotate’
+panel_placeholder: no visible global function definition for
+  ‘scale_x_continuous’
+panel_placeholder: no visible global function definition for
+  ‘scale_y_continuous’
+panel_placeholder: no visible global function definition for
+  ‘theme_void’
+save_journal: no visible global function definition for ‘ggsave’
+theme_journal: no visible global function definition for
+  ‘theme_classic’
+theme_journal: no visible global function definition for ‘theme’
+theme_journal: no visible global function definition for
+  ‘element_blank’
+theme_journal: no visible global function definition for ‘element_text’
+theme_journal: no visible global function definition for ‘element_line’
+theme_journal: no visible global function definition for ‘margin’
+Undefined global functions or variables:
+  annotate element_blank element_line element_text ggplot ggsave labs
+  margin scale_x_continuous scale_y_continuous theme theme_classic
+  theme_void
+* checking for missing documentation entries ... OK
+* checking examples ... NONE
+* DONE
+Status: 2 NOTEs

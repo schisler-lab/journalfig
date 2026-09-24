@@ -1,0 +1,20 @@
+Package: journalfig
+Title: Schisler Lab Journal Figure Pipeline
+Version: 0.3.0
+Authors@R: person("Jonathan", "Schisler", email = "schisler@unc.edu", role = c("aut", "cre"))
+Description: Builds manuscript figures at final print size with live text, so
+    Illustrator can assemble and annotate them without re-rendering. Encodes the
+    lab's type, geometry and export conventions, and enforces them by reopening
+    the exported files and checking rather than by asking anyone to remember.
+License: file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 4.1), ggplot2, patchwork
+Imports: jsonlite, systemfonts, svglite, ragg, grid, grDevices, stats,
+        utils
+Suggests: showtext, here
+RoxygenNote: 7.3.2
+NeedsCompilation: no
+Packaged: 2026-09-24 11:28:42 UTC; nitdawg
+Author: Jonathan Schisler [aut, cre]
+Maintainer: Jonathan Schisler <schisler@unc.edu>
