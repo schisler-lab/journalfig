@@ -3,7 +3,21 @@
 # Part of journalfig. See the package README for the pipeline this belongs to.
 # =============================================================================
 
-#' What is actually installed, so family strings are copied rather than guessed.
+#' List the font families installed on this machine
+#'
+#' So a family string is copied rather than guessed. A family name that is one
+#' character off resolves to nothing and, without [resolve_font()] in the way,
+#' renders in whatever the device falls back to.
+#'
+#' @param pattern Case-insensitive regular expression to filter family names.
+#'   Empty lists everything.
+#' @return A data frame of family and style, invisibly. Printed as a side
+#'   effect.
+#' @examples
+#' \dontrun{
+#' list_fonts("concourse")
+#' }
+#' @export
 list_fonts <- function(pattern = "") {
   f <- systemfonts::system_fonts()
   f <- f[grepl(pattern, f$family, ignore.case = TRUE), c("family", "style")]
@@ -14,24 +28,52 @@ list_fonts <- function(pattern = "") {
 
 #' Are this family's digits already the same width?
 #'
-#' Measured, not assumed. Open Sans and DejaVu ship tabular digits; Arial and
-#' its clones do not and offer no tnum to switch on; MB Type ships a separate
-#' " Tab" family instead of a feature.
+#' Measured by shaping two strings and comparing their widths, not assumed from
+#' what the foundry says. Open Sans and DejaVu ship tabular digits; Arial and
+#' its metric clones do not and offer no `tnum` feature to switch on; MB Type
+#' ships a separate `" Tab"` family instead of a feature.
+#'
+#' @param family An installed family name.
+#' @return `TRUE` if the digits are uniform width.
+#' @examples
+#' \dontrun{
+#' digits_are_tabular("Open Sans")
+#' }
+#' @export
 digits_are_tabular <- function(family) {
   w <- function(s) systemfonts::shape_string(s, family = family, size = 40)$metrics$width
   isTRUE(all.equal(w("111"), w("000"), tolerance = 1e-6))
 }
 
-#' Resolve a font key (or a literal family name) to an installed family.
+#' Resolve a font key, or a family name, to an installed family
 #'
-#' Never substitutes silently. A missing font stops the render by default; the
-#' old register_open_sans() had the same refusal and it is worth keeping,
-#' because a silent fall back to Helvetica is not noticed until proof.
+#' Never substitutes silently. A missing font stops the render, because a quiet
+#' fall back to Helvetica is not noticed until proof.
 #'
-#' Licensed faces (Concourse, Triplicate) are safe to use here because the
-#' pipeline outlines in Illustrator before anything ships, so the font itself
-#' never travels. Only a collaborator who must edit the LIVE file needs it
-#' installed, which is what font = "safe" is for.
+#' With `tabular = TRUE` there are three routes and which applies depends on
+#' the foundry. A real installed sibling family (`"Concourse 3 Tab"`) is
+#' preferred, because the name resolves through the operating system and every
+#' device honours it. A family whose digits are already uniform is returned
+#' unchanged. Only as a last resort is a `tnum` variant registered, with a
+#' warning, because a registered variant is a systemfonts alias that svglite
+#' honours and cairo_pdf does not: the SVG comes out perfect and the PDF
+#' silently substitutes.
+#'
+#' Licensed faces are safe here for work owned end to end, because the pipeline
+#' outlines in Illustrator before anything ships and the font itself never
+#' travels. A collaborator who must edit the live file needs the safe face,
+#' which is what `font = "safe"` is for.
+#'
+#' @param font A key in the font registry, or a family name outright.
+#'   Defaults to the active face, see [jf_font()].
+#' @param allow_fallback Permit the safe face if `font` is not installed.
+#'   `FALSE`, the default, stops instead.
+#' @param tabular Ask for uniform-width digits. Right for a y axis, where
+#'   numbers stack and the eye reads them as a column. Wrong in running text,
+#'   where it pads narrow digits out and reads gappy.
+#' @return An installed family name.
+#' @seealso [font_report()] to see which route a face takes.
+#' @export
 resolve_font <- function(font = jf_font(), allow_fallback = FALSE,
                          tabular = TRUE) {
   family <- if (!is.null(jf()$fonts[[font]])) jf()$fonts[[font]] else font
@@ -89,9 +131,21 @@ resolve_font <- function(font = jf_font(), allow_fallback = FALSE,
   family
 }
 
-#' Does this face already have tabular digits, and does tnum change anything?
-#' Answers the question directly instead of leaving you to wonder whether the
-#' variant did something. Widths are at 20 pt for readability.
+#' Report how a face gets its tabular digits
+#'
+#' Answers the question directly rather than leaving you to wonder whether the
+#' variant did anything. Prints the measured width of `"111"` against `"000"`
+#' at 20 pt, before and after, and names which of [resolve_font()]'s three
+#' routes this face actually takes.
+#'
+#' @param font A key in the font registry, or a family name outright.
+#' @return The four measured widths, invisibly. Printed as a side effect.
+#' @seealso [resolve_font()], [digits_are_tabular()]
+#' @examples
+#' \dontrun{
+#' font_report("concourse")
+#' }
+#' @export
 font_report <- function(font = jf_font()) {
   fam <- if (!is.null(jf()$fonts[[font]])) jf()$fonts[[font]] else font
   if (!(fam %in% systemfonts::system_fonts()$family))
@@ -120,13 +174,20 @@ font_report <- function(font = jf_font()) {
   invisible(d)
 }
 
-#' The family to use for BOLD text.
+#' The family and face to use for bold text
 #'
-#' Concourse's three lighter weights use weight 6 as their bold rather than
-#' carrying one internally, so ggplot's face = "bold" would synthesize a smeared
-#' fake bold. Where jf()$bold_for names a real bold partner, use that family and
-#' leave face alone. Because weights 2, 3, 4 and 6 are duplexed to identical
-#' character widths, swapping in the bold never reflows anything.
+#' Some families carry no internal bold and use a separate weight as their
+#' bold. Concourse is one: its three lighter weights use weight 6, so asking
+#' ggplot for `face = "bold"` gets a synthesized, smeared fake. Where the
+#' configuration's `bold_for` names a real bold partner, that family is
+#' returned with the face left alone. Weights in a duplexed family have
+#' identical character widths, so swapping one in never reflows anything.
+#'
+#' @param font A key in the font registry, or a family name outright.
+#' @param allow_fallback Permit the safe face if `font` is not installed.
+#' @return A list of `family` and `face`, ready to hand to
+#'   [ggplot2::element_text()].
+#' @export
 resolve_font_bold <- function(font = jf_font(), allow_fallback = FALSE) {
   fam  <- resolve_font(font, allow_fallback = allow_fallback, tabular = FALSE)
   pair <- jf()$bold_for[[fam]]

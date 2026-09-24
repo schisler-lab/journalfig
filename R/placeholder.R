@@ -3,14 +3,21 @@
 # Part of journalfig. See the package README for the pipeline this belongs to.
 # =============================================================================
 
-#' An empty, correctly sized slot for a panel that code cannot generate: a
-#' design schematic, a pathway diagram, a microscopy montage.
+#' A correctly sized empty slot for art that code cannot generate
 #'
-#' It composes like any other panel, so the figure carries its true final
-#' dimensions from the first day rather than from assembly, and Illustrator gets
-#' an exact box to drop art into. save_journal() warns on every export that
-#' still contains one, so an unfilled slot cannot quietly become the submitted
-#' version.
+#' A design schematic, a pathway diagram, a microscopy montage. It composes
+#' like any other panel, so the figure carries its true final dimensions from
+#' the first day rather than from assembly, and Illustrator gets an exact box
+#' to drop art into.
+#'
+#' [save_journal()] warns on every export that still contains one, so an
+#' unfilled slot cannot quietly become the submitted version.
+#'
+#' @param note What goes here, drawn inside the box.
+#' @param font Face to use, defaulting to the active one.
+#' @param allow_fallback Permit the safe face if `font` is not installed.
+#' @return A ggplot, marked so [save_journal()] can count it.
+#' @export
 panel_placeholder <- function(note = "art to be placed", font = jf_font(),
                               allow_fallback = FALSE) {
   family <- resolve_font(font, allow_fallback = allow_fallback, tabular = FALSE)

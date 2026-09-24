@@ -3,11 +3,30 @@
 # Part of journalfig. See the package README for the pipeline this belongs to.
 # =============================================================================
 
-#' Journal theme. `width` is the FIGURE key, and every panel in one figure gets
-#' the same theme, so type size is uniform across the figure rather than varying
-#' panel by panel.
+#' The journal theme
 #'
-#' @param ticks which axes carry ticks. Categorical axes get none.
+#' `width` is the FIGURE key, not a panel's. Every panel in one figure is given
+#' the same theme, so type size is uniform across the figure rather than
+#' varying panel by panel.
+#'
+#' Structure is grey so it recedes and content is black: axis lines and ticks
+#' grey, tick labels black regular, axis titles black bold. The y axis gets
+#' tabular digits, because that is where numbers stack and the eye reads them
+#' as a column. Everything else stays proportional, since tabular pads narrow
+#' digits out and makes a string like `"rho = +0.50, p < 0.001"` read gappy.
+#'
+#' The theme owns structure colour only. Data colour belongs to the project
+#' palette and this package never touches it.
+#'
+#' @param width Figure width key, see [fig_width()].
+#' @param font Face to use, defaulting to the active one. Set it with
+#'   [jf_font()] before building anything rather than passing it here.
+#' @param ticks Which axes carry tick marks. Ticks indicate continuous data, so
+#'   a categorical axis gets none.
+#' @param allow_fallback Permit the safe face if `font` is not installed.
+#' @return A ggplot theme.
+#' @seealso [annotate_stat()], [save_journal()]
+#' @export
 theme_journal <- function(width = "1col", font = jf_font(),
                           ticks = c("none", "x", "y", "both"),
                           allow_fallback = FALSE) {
@@ -61,7 +80,20 @@ theme_journal <- function(width = "1col", font = jf_font(),
   t
 }
 
-#' In-panel statistic. Points in, mm out.
+#' Report a statistic on the panel
+#'
+#' Statistics stay on the panel rather than migrating to the caption, and
+#' report actual values rather than stars alone. Drawn in the annotation grey
+#' so it sits behind the data.
+#'
+#' @param label The text, for example `"rho = +0.50, p < 0.001, n = 230"`.
+#' @param x,y Position. The defaults put it at the top left of the panel.
+#' @param hjust,vjust Justification, tuned to the default position.
+#' @param colour Text colour, by default the configuration's annotation grey.
+#' @param font Face to use, defaulting to the active one.
+#' @param allow_fallback Permit the safe face if `font` is not installed.
+#' @return A ggplot annotation layer.
+#' @export
 annotate_stat <- function(label, x = -Inf, y = Inf, hjust = -0.1, vjust = 1.3,
                           colour = jf()$colour$annotation, font = jf_font(),
                           allow_fallback = FALSE) {

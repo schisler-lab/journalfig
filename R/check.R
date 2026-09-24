@@ -3,13 +3,25 @@
 # Part of journalfig. See the package README for the pipeline this belongs to.
 # =============================================================================
 
-#' Reopen an exported SVG and assert it matches the spec.
+#' Reopen an exported SVG and assert it matches the spec
 #'
-#' This is the point of the whole file. Every rule here already existed in prose
-#' and was broken anyway: panels went out at four nonstandard widths, endotype
-#' colors appeared in figures that encode nothing by color, and text kept
-#' getting outlined. A rule nobody can violate beats a rule everybody agrees
-#' with, so this runs on every save.
+#' Checks five things: that the text is live rather than outlined, that every
+#' family is the one you asked for, that nothing sits below the type floor or
+#' the stroke floor, and that the figure is a standard column width.
+#'
+#' Type or strokes landing exactly ON a floor are reported as such. A floor is
+#' the boundary a journal rejects at, so type parked on it has no headroom and
+#' one late rescale turns a pass into a reject.
+#'
+#' Every rule here existed in prose first and was broken anyway, which is why
+#' it is checked rather than documented.
+#'
+#' @param file Path to an SVG written by [save_journal()].
+#' @param font Face to check against, defaulting to the active one.
+#' @param verbose Print what was measured.
+#' @return `TRUE` invisibly. Stops on any failure.
+#' @seealso [check_pdf_fonts()]
+#' @export
 check_journal <- function(file, font = jf_font(), verbose = TRUE) {
   svg <- paste(readLines(file, warn = FALSE), collapse = "\n")
   fail <- character(0); note <- character(0)
@@ -89,10 +101,20 @@ check_journal <- function(file, font = jf_font(), verbose = TRUE) {
 #' Which fonts did the PDF actually embed?
 #'
 #' The SVG check cannot see this. cairo_pdf resolves fonts through fontconfig
-#' rather than systemfonts, so a family that systemfonts knows about but the OS
-#' does not gets silently swapped, and the SVG from the same render still looks
-#' perfect. That is exactly how a figure passed with Open Sans throughout the
-#' SVG while its PDF carried DejaVu Sans on every axis number.
+#' rather than systemfonts, so a family systemfonts knows about but the
+#' operating system does not gets silently swapped, and the SVG from the same
+#' render still looks perfect. That is how a figure passed with the right face
+#' throughout its SVG while its PDF carried DejaVu Sans on every axis number.
+#'
+#' Cairo names the embedded FACE rather than the family, so the comparison is
+#' on the stem: a real bold is not mistaken for a substitution.
+#'
+#' @param file Path to a PDF written by [save_journal()].
+#' @param font Face to check against, defaulting to the active one.
+#' @param verbose Print the families found.
+#' @return `TRUE` invisibly. Stops if anything was substituted.
+#' @seealso [check_journal()]
+#' @export
 check_pdf_fonts <- function(file, font = jf_font(), verbose = TRUE) {
   # Read as RAW and search with grepRaw. The earlier version did
   # rawToChar(raw[raw != as.raw(0)]) first, which mangles a binary PDF badly

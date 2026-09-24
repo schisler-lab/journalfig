@@ -19,14 +19,25 @@
   base
 }
 
-#' Point journalfig at a project override file.
+#' Point journalfig at a project override file
 #'
-#' Call with no argument to reload. Looks for `journal_fig.json` beside the
-#' working directory by default, so a project that wants overrides needs no
-#' setup and one that does not needs no file.
+#' Geometry and type are lab-wide and ship with the package. The font registry
+#' is per-machine, because licensed families are installed on some machines and
+#' not others, so only the collaborator-safe face ships. A project overrides by
+#' putting `journal_fig.json` at its root, naming only what differs; it is
+#' deep-merged over the defaults.
 #'
-#' @param path override JSON, or NULL to search for one.
-#' @return the merged configuration, invisibly.
+#' Call with no argument to reload, or to let it find the file itself.
+#'
+#' @param path Path to an override JSON, or `NULL` to look for
+#'   `journal_fig.json` in the working directory and then in `R/`.
+#' @return The merged configuration, invisibly.
+#' @seealso [jf()] to read it, [jf_font()] to choose a face.
+#' @examples
+#' \dontrun{
+#' jf_config("journal_fig.json")
+#' }
+#' @export
 jf_config <- function(path = NULL) {
   base <- jsonlite::fromJSON(
     system.file("extdata", "journal_fig.json", package = "journalfig"))
@@ -43,29 +54,49 @@ jf_config <- function(path = NULL) {
   invisible(base)
 }
 
-#' The active configuration. Loads on first use.
+#' The active configuration
+#'
+#' Loads on first use, so a script that needs no overrides never has to call
+#' [jf_config()].
+#'
+#' @return The configuration as a nested list: `widths_mm`, `type_pt`,
+#'   `stroke_pt`, `colour`, `fonts`, `bold_for` and the rest.
+#' @examples
+#' jf()$type_pt$floor
+#' @export
 jf <- function() {
   if (is.null(.jf_env$cfg)) jf_config()
   .jf_env$cfg
 }
 
-#' The font this figure is using.
+#' Get or set the face this figure is using
 #'
-#' Font is a FIGURE-level decision, but every call site used to default to the
-#' configuration default independently, so a figure built in Concourse still
-#' drew its axes, ticks and in-panel statistics in the safe face.
+#' The face is a decision about a FIGURE, not about a call, so it is set once
+#' and every function in the package defaults to it.
 #'
-#' CALL THIS FIRST, before building any layer. It is deliberately NOT a side
-#' effect of theme_journal(), because R evaluates a default argument lazily at
-#' the point of use: annotate_stat() called before theme_journal() in a `+`
-#' chain would resolve its font before the theme ever ran, and the figure would
-#' come out mixed depending on the order somebody happened to type. An explicit
-#' call at the top of the script has no such ordering trap.
+#' Call it FIRST, before building any layer. It is deliberately not a side
+#' effect of [theme_journal()]. R evaluates a default argument lazily, at the
+#' moment the function first needs it, so in `p + annotate_stat(...) +
+#' theme_journal(...)` the annotation resolves its font before the theme is
+#' ever evaluated. Anything that sets the face while a plot is being built
+#' arrives too late for the layers next to it, and the figure comes out mixed
+#' according to the order somebody happened to type.
 #'
-#'   jf_font("concourse")
-#'   p <- ggplot(...) + annotate_stat(...) + theme_journal("2col")
+#' Skipping it is not loud. Every call site independently falls back to the
+#' safe face, so a figure comes out mostly in the default with a few strings in
+#' the family you thought you had asked for. [check_journal()] and
+#' [check_pdf_fonts()] catch that afterwards; this prevents it.
 #'
-#' @param font a key or family name to set, or nothing to read.
+#' @param font A key in the configuration's font registry, or a family name
+#'   outright. Omit to read the active face rather than set it.
+#' @return The active face. Invisibly when setting.
+#' @seealso [resolve_font()], [font_report()]
+#' @examples
+#' \dontrun{
+#' jf_font("concourse")
+#' p <- ggplot(df, aes(x, y)) + annotate_stat("rho = +0.50") + theme_journal("2col")
+#' }
+#' @export
 jf_font <- function(font = NULL) {
   if (!is.null(font)) {
     .jf_env$font <- font

@@ -3,17 +3,37 @@
 # Part of journalfig. See the package README for the pipeline this belongs to.
 # =============================================================================
 
-#' Save a finished figure at final print size with LIVE TEXT.
+#' Save a finished figure at final print size, with live text
 #'
-#' svg is the Illustrator handoff. fix_text_size = FALSE is not optional: by
-#' default svglite pins every string to a fixed textLength, and editing that
-#' text in Illustrator then stretches or squeezes it to the old width.
+#' Exports once, at the size the figure will print. There is no scale factor
+#' and there is nothing to shrink afterwards.
 #'
-#' pdf via cairo embeds a FONT SUBSET. The text is live, but you are editing
+#' SVG is the Illustrator handoff, written by svglite with
+#' `fix_text_size = FALSE`. That flag is not optional: by default every string
+#' is pinned to a fixed `textLength`, and editing that text in Illustrator then
+#' stretches or squeezes it back to the old width.
+#'
+#' PDF via cairo embeds a font SUBSET. The text is live, but you are editing
 #' against a subset, so typing a glyph it does not carry is where people get
-#' stuck. Use it when a PDF is required; prefer svg.
+#' stuck. Use it when a PDF is required and prefer SVG.
 #'
-#' png is work in progress only and never a deliverable.
+#' PNG is work in progress only and never a deliverable.
+#'
+#' With `check = TRUE` the written files are reopened and asserted against the
+#' spec, so a figure that misses it fails here rather than at proof.
+#'
+#' @param plot A ggplot or patchwork composition.
+#' @param name File name without extension.
+#' @param width Figure width key, see [fig_width()].
+#' @param height_mm Height in millimetres. Capped by the configuration's page
+#'   maximum.
+#' @param fmt Which formats to write.
+#' @param outdir Directory to write into, created if needed.
+#' @param font Face to check against, defaulting to the active one.
+#' @param check Reopen and verify what was written.
+#' @return The paths written, invisibly.
+#' @seealso [check_journal()], [check_pdf_fonts()]
+#' @export
 save_journal <- function(plot, name, width = "1col", height_mm,
                          fmt = c("svg", "pdf", "png"), outdir = "figures",
                          font = jf_font(), check = TRUE) {
