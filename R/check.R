@@ -38,7 +38,15 @@ check_journal <- function(file, font = jf_font(), verbose = TRUE) {
   if (length(sz) && min(sz) < jf()$type_pt$floor - 0.01)
     fail <- c(fail, sprintf("text at %.2f pt is below the %.1f pt floor",
                             min(sz), jf()$type_pt$floor))
-  else if (length(sz)) note <- c(note, sprintf("smallest text %.2f pt", min(sz)))
+  else if (length(sz)) {
+    # A floor is a rejection boundary, not a target. Type sitting on it has no
+    # headroom: any late rescale in Illustrator, or a journal that rounds the
+    # other way, turns a pass into a reject. Say so rather than reporting a
+    # clean number.
+    at_floor <- min(sz) < jf()$type_pt$floor + 0.05
+    note <- c(note, sprintf("smallest text %.2f pt%s", min(sz),
+                            if (at_floor) " (AT THE FLOOR, no headroom)" else ""))
+  }
 
   # 4. nothing below the stroke floor
   # svglite writes stroke-width in px at 96 per inch, while font-size is already
@@ -51,7 +59,11 @@ check_journal <- function(file, font = jf_font(), verbose = TRUE) {
   if (length(sw) && min(sw) < jf()$stroke_pt$floor - 0.01)
     fail <- c(fail, sprintf("stroke at %.2f pt is below the %.1f pt floor",
                             min(sw), jf()$stroke_pt$floor))
-  else if (length(sw)) note <- c(note, sprintf("thinnest stroke %.2f pt", min(sw)))
+  else if (length(sw)) {
+    at_floor <- min(sw) < jf()$stroke_pt$floor + 0.05
+    note <- c(note, sprintf("thinnest stroke %.2f pt%s", min(sw),
+                            if (at_floor) " (at the floor)" else ""))
+  }
 
   # 5. a standard width
   wpx <- suppressWarnings(as.numeric(gsub("[^0-9.]", "",
