@@ -104,8 +104,15 @@ font_report <- function(font = jf()$default_font) {
   fixed   <- isTRUE(all.equal(unname(d[["tab_1"]]),  unname(d[["tab_0"]])))
   message(sprintf("%s: default 111=%.1f 000=%.1f | tnum 111=%.1f 000=%.1f",
                   fam, d[["prop_1"]], d[["prop_0"]], d[["tab_1"]], d[["tab_0"]]))
-  route <- if (paste(fam, "Tab") %in% systemfonts::system_fonts()$family)
-             sprintf("a separate '%s Tab' family", fam) else "the tnum feature"
+  # Report the route resolve_font ACTUALLY takes, not the one it might. This
+  # said "the tnum feature" for a face whose digits are already tabular, where
+  # resolve_font correctly returns the base family and registers nothing.
+  route <- if (identical(tab, paste(fam, "Tab")))
+             sprintf("a separate '%s Tab' family", fam)
+           else if (identical(tab, fam))
+             "none needed, the base family is used as is"
+           else
+             sprintf("a registered variant '%s', which cairo_pdf CANNOT see", tab)
   message(sprintf("  tabular route: %s", route))
   message(if (already) "  base digits are ALREADY tabular; nothing to switch on"
           else if (fixed) "  base digits are proportional; the tabular route fixes them"

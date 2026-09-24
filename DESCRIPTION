@@ -1,6 +1,6 @@
 Package: journalfig
 Title: Schisler Lab Journal Figure Pipeline
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Jonathan", "Schisler", email = "schisler@unc.edu", role = c("aut", "cre"))
 Description: Builds manuscript figures at final print size with live text, so
     Illustrator can assemble and annotate them without re-rendering. Encodes the
